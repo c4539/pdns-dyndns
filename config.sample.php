@@ -1,6 +1,4 @@
 <?php
-// dyndns configuration
-define("UPDATE_DYNDNS_RECORD_COMMAND", "sudo update-bind-record");
 
 // Database configuration
 define("SQL_HOST", "localhost");
@@ -12,5 +10,3 @@ define("SQL_TABLEPREFIX", "dyndns__");
 // logging
 define("LOG_LAST_REQUEST", false);
 define("LOG_LAST_RESULT",  false);
-
-?>
