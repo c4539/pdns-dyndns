@@ -1,0 +1,11 @@
+<ifModule mod_headers.c>
+	Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+	Header set Pragma "no-cache"
+	Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+</ifModule>
+
+<Files ~ "(REQUEST|RESULT)\.txt$">
+	Require all denied
+</Files>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
