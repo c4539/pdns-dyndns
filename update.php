@@ -101,7 +101,7 @@ if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode
 	// Update Prefix in AAAA records
 	while ($DbDomainsStmt->fetch()) {
 		$IPv6AdressBinary = inet_pton($RecordContent);
-		$IPv6Adress = inet_ntop(($IPv6AdressBinary & (~ $IPv6MaskBinary)) | $IPv6PrefixBinary);
+		$IPv6Adress = inet_ntop(($IPv6AdressBinary & (~ $IPv6MaskBinary)) | ($IPv6PrefixBinary & $IPv6MaskBinary));
 
 		// update record only if the new IPv6 address is valid
 		if (filter_var($IPv6Adress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
