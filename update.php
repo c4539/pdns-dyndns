@@ -79,6 +79,16 @@ function ASCIIHexText($bin){
 }
 
 if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode("/", $_REQUEST['ip6lanprefix']))) {
+	// Read AAAA records for domain
+	$DbDomainsStmt = $DbConn->prepare("SELECT records.id, records.name, records.content, dyndomains.prefix_length FROM records inner join " . SQL_TABLEPREFIX . "domains as dyndomains on records.domain_id = dyndomains.domain_id left join " . SQL_TABLEPREFIX . "users on dyndomains.user_id = " . SQL_TABLEPREFIX . "users.id where records.type = 'AAAA' and " . SQL_TABLEPREFIX . "users.id = ?");
+	$DbDomainsStmt->bind_param("i", $UserId);
+	$DbDomainsStmt->execute();
+	$DbDomainsStmt->bind_result($RecordId, $RecordName, $RecordContent, $PrefixLength);
+
+	// Override IPv6 LAN prefix if defined in dyndomains.prefix_length
+	if (is_numeric($PrefixLength)) {
+		$IPv6Prefix = $PrefixLength;
+	}
 	$IPv6PrefixBinary = inet_pton($IPv6Prefix);
 
 	// Build mask
@@ -91,12 +101,6 @@ if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode
 		}
 	}
 	$IPv6MaskBinary = implode($Bytes);
-
-	// Read AAAA records for domain
-	$DbDomainsStmt = $DbConn->prepare("SELECT records.id, records.name, records.content FROM records inner join " . SQL_TABLEPREFIX . "domains on records.domain_id = " . SQL_TABLEPREFIX . "domains.domain_id left join " . SQL_TABLEPREFIX . "users on " . SQL_TABLEPREFIX . "domains.user_id = " . SQL_TABLEPREFIX . "users.id where records.type = 'AAAA' and " . SQL_TABLEPREFIX . "users.id = ?");
-	$DbDomainsStmt->bind_param("i", $UserId);
-	$DbDomainsStmt->execute();
-	$DbDomainsStmt->bind_result($RecordId, $RecordName, $RecordContent);
 
 	// Update Prefix in AAAA records
 	while ($DbDomainsStmt->fetch()) {
