@@ -139,6 +139,9 @@ while ($DbRecordsStmt->fetch()) {
 			// update record only if the new IPv6 address is valid
 			if (filter_var($_REQUEST['ip6addr'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 				$Updates[$RecordId] = $_REQUEST['ip6addr'];
+			} else {
+				// Do not update records that should have a IPv6 address outside the lan prefix
+				unset($Updates[$RecordId]);
 			}
 			break;
 	}
