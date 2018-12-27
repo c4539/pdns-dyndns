@@ -85,11 +85,10 @@ if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode
 	$DbDomainsStmt->execute();
 	$DbDomainsStmt->bind_result($RecordId, $RecordName, $RecordContent, $PrefixLength);
 
-	// Override IPv6 LAN prefix if defined in dyndomains.prefix_length
+	// Override IPv6 LAN prefix length if defined in dyndomains.prefix_length
 	if (is_numeric($PrefixLength)) {
-		$IPv6Prefix = $PrefixLength;
+		$IPv6PrefixLength = $PrefixLength;
 	}
-	$IPv6PrefixBinary = inet_pton($IPv6Prefix);
 
 	// Build mask
 	$Byte = "";
@@ -101,6 +100,9 @@ if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode
 		}
 	}
 	$IPv6MaskBinary = implode($Bytes);
+
+	// Convert IPv6 prefix to binary
+	$IPv6PrefixBinary = inet_pton($IPv6Prefix);
 
 	// Update Prefix in AAAA records
 	while ($DbDomainsStmt->fetch()) {
