@@ -177,13 +177,6 @@ if (LOG_LAST_REQUEST) {
 
 print_r($Updates);
 
-echo <<<EOL
-IPv6Prefix:       $IPv6Prefix
-IPv6PrefixLength: $IPv6PrefixLength
-PrefixLength:     $PrefixLength
-
-EOL;
-
 # Disconnect from database
 $DbConn->close();
 
