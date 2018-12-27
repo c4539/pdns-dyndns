@@ -174,18 +174,14 @@ if (LOG_LAST_REQUEST) {
 
 print_r($Updates);
 
+echo <<<EOL
+IPv6Prefix:       $IPv6Prefix
+IPv6PrefixLength: $IPv6PrefixLength
+IPv6PrefixBinary: $IPv6PrefixBinary
+IPv6MaskBinary:   $IPv6MaskBinary
+EOL;
+
 # Disconnect from database
 $DbConn->close();
 
 die("Completed");
-#############################################
-
-
-
-// Print result
-print($result);
-
-# Log result
-if ($LOG_LAST_RESULT) {
-	file_put_contents("./RESULT.txt", $result);
-}
