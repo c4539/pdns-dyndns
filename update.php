@@ -85,28 +85,31 @@ if ($_REQUEST['ip6lanprefix'] && (list($IPv6Prefix, $IPv6PrefixLength) = explode
 	$DbDomainsStmt->execute();
 	$DbDomainsStmt->bind_result($RecordId, $RecordName, $RecordContent, $PrefixLength);
 
-	// Override IPv6 LAN prefix length if defined in dyndomains.prefix_length
-	if (is_numeric($PrefixLength)) {
-		$IPv6PrefixLength = $PrefixLength;
-	}
-
-	// Build mask
-	$Byte = "";
-	for ($i = 1; $i <= 128; $i++) {
-		$Byte .= ($i<=$IPv6PrefixLength ? "1" : "0");
-		if ($i%8 == 0) {
-			$Bytes[] = chr(bindec($Byte));
-			$Byte = "";
-		}
-	}
-	$IPv6MaskBinary = implode($Bytes);
-
-	// Convert IPv6 prefix to binary
-	$IPv6PrefixBinary = inet_pton($IPv6Prefix);
-
 	// Update Prefix in AAAA records
 	while ($DbDomainsStmt->fetch()) {
+		// Override IPv6 LAN prefix length if defined in dyndomains.prefix_length
+		if (is_numeric($PrefixLength)) {
+			$IPv6PrefixLength = $PrefixLength;
+		}
+
+		// Build mask
+		$Byte = "";
+		for ($i = 1; $i <= 128; $i++) {
+			$Byte .= ($i<=$IPv6PrefixLength ? "1" : "0");
+			if ($i%8 == 0) {
+				$Bytes[] = chr(bindec($Byte));
+				$Byte = "";
+			}
+		}
+		$IPv6MaskBinary = implode($Bytes);
+
+		// Convert IPv6 prefix to binary
+		$IPv6PrefixBinary = inet_pton($IPv6Prefix);
+		
+		// Convert IPv6 address to binary
 		$IPv6AdressBinary = inet_pton($RecordContent);
+
+		// Build IPv6 address
 		$IPv6Adress = inet_ntop(($IPv6AdressBinary & (~ $IPv6MaskBinary)) | ($IPv6PrefixBinary & $IPv6MaskBinary));
 
 		// update record only if the new IPv6 address is valid
@@ -177,8 +180,8 @@ print_r($Updates);
 echo <<<EOL
 IPv6Prefix:       $IPv6Prefix
 IPv6PrefixLength: $IPv6PrefixLength
-IPv6PrefixBinary: $IPv6PrefixBinary
-IPv6MaskBinary:   $IPv6MaskBinary
+PrefixLength:     $PrefixLength
+
 EOL;
 
 # Disconnect from database
